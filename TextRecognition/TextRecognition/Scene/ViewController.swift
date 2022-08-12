@@ -49,6 +49,21 @@ class ViewController: UIViewController {
         return stackView
     }()
     
+    private let recognizeButton : UIButton = {
+        let button = UIButton()
+        button.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        button.tintColor = .white
+        button.backgroundColor = .purple
+        button.setTitleColor(.white, for: .normal)
+        button.setImage(UIImage(systemName: "doc.text.viewfinder"), for: .normal)
+        button.setTitle(" Recognize Text ", for: .normal)
+        button.layer.cornerRadius = 15.0
+        button.layer.borderWidth = 2
+        button.layer.borderColor = UIColor.systemGray5.cgColor
+        button.addTarget(self, action: #selector(sendImage), for: .touchUpInside)
+        return button
+    }()
+    
     private let label : UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
@@ -59,7 +74,7 @@ class ViewController: UIViewController {
     
     private let recognizeImage : UIImageView = {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleToFill
+        imageView.contentMode = .scaleAspectFit
         return imageView
     }()
 
@@ -106,6 +121,10 @@ class ViewController: UIViewController {
             print("We don't have access to your photos.")
         }
     }
+    
+    @objc func sendImage(){
+        recognizeText(image: recognizeImage.image)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -117,6 +136,7 @@ class ViewController: UIViewController {
         view.addSubview(stackView)
         stackView.addArrangedSubview(cameraButton)
         stackView.addArrangedSubview(libraryButon)
+        view.addSubview(recognizeButton)
         
         recognizeText(image: recognizeImage.image)
     }
@@ -125,16 +145,20 @@ class ViewController: UIViewController {
         super.viewDidLayoutSubviews()
         
         stackView.frame = CGRect(x: 20, y: view.safeAreaInsets.top,
-                                 width: view.frame.size.width-40,
-                                 height: 60)
+                                width: view.frame.size.width-40,
+                                height: 60)
         
         recognizeImage.frame = CGRect(x: 20, y: view.safeAreaInsets.top + 60,
-                                 width: view.frame.size.width-40,
-                                 height: view.frame.size.width-40)
+                                      width: view.frame.size.width-40,
+                                      height: view.frame.size.width-40)
         
-        label.frame = CGRect(x: 20, y: view.frame.size.width + view.safeAreaInsets.top,
-                             width: view.frame.size.width-40,
-                             height: 200)
+        recognizeButton.frame = CGRect(x: 20, y: view.frame.size.width + view.safeAreaInsets.top,
+                                       width: view.frame.size.width-40,
+                                       height: 60)
+        
+        label.frame = CGRect(x: 20, y: view.frame.size.width + view.safeAreaInsets.top + 70,
+                            width: view.frame.size.width-40,
+                            height: 250)
     }
 
     private func recognizeText(image: UIImage?) {
