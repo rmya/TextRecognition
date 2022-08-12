@@ -204,6 +204,7 @@ extension ViewController : UIImagePickerControllerDelegate, UINavigationControll
         }else{
             recognizeImage.image = info[UIImagePickerController.InfoKey.editedImage] as? UIImage
         }
+        label.text = " "
         dismiss(animated: true, completion: nil)
     }
 }
