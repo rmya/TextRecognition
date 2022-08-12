@@ -10,6 +10,42 @@ import Vision
 
 class ViewController: UIViewController {
     
+    private let cameraButton : UIButton = {
+        let button = UIButton()
+        button.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        button.tintColor = .white
+        button.backgroundColor = .purple
+        button.setTitleColor(.white, for: .normal)
+        button.setImage(UIImage(systemName: "camera.fill"), for: .normal)
+        button.setTitle(" Camera ", for: .normal)
+        button.layer.cornerRadius = 15.0
+        button.layer.borderWidth = 2
+        button.layer.borderColor = UIColor.systemGray5.cgColor
+        return button
+    }()
+    
+    private let libraryButon : UIButton = {
+        let button = UIButton()
+        button.tintColor = .white
+        button.backgroundColor = .purple
+        button.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        button.setTitleColor(.white, for: .normal)
+        button.setImage(UIImage(systemName: "photo.fill.on.rectangle.fill"), for: .normal)
+        button.setTitle(" Library ", for: .normal)
+        button.layer.cornerRadius = 15.0
+        button.layer.borderWidth = 2
+        button.layer.borderColor = UIColor.systemGray5.cgColor
+        return button
+    }()
+    
+    private let stackView : UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = NSLayoutConstraint.Axis.horizontal
+        stackView.distribution = UIStackView.Distribution.fillEqually
+        stackView.alignment = UIStackView.Alignment.center
+        return stackView
+    }()
+    
     private let label : UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
@@ -20,7 +56,7 @@ class ViewController: UIViewController {
     
     private let imageView : UIImageView = {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleToFill
         imageView.image = UIImage(named: "talk2")
         return imageView
     }()
@@ -29,6 +65,9 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         view.addSubview(label)
         view.addSubview(imageView)
+        view.addSubview(stackView)
+        stackView.addArrangedSubview(cameraButton)
+        stackView.addArrangedSubview(libraryButon)
         
         recognizeText(image: imageView.image)
     }
@@ -36,7 +75,11 @@ class ViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        imageView.frame = CGRect(x: 20, y: view.safeAreaInsets.top,
+        stackView.frame = CGRect(x: 20, y: view.safeAreaInsets.top,
+                                 width: view.frame.size.width-40,
+                                 height: 60)
+        
+        imageView.frame = CGRect(x: 20, y: view.safeAreaInsets.top + 60,
                                  width: view.frame.size.width-40,
                                  height: view.frame.size.width-40)
         
