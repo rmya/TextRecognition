@@ -7,6 +7,7 @@
 
 import UIKit
 import Vision
+import Photos
 
 class ViewController: UIViewController {
     
@@ -21,6 +22,7 @@ class ViewController: UIViewController {
         button.layer.cornerRadius = 15.0
         button.layer.borderWidth = 2
         button.layer.borderColor = UIColor.systemGray5.cgColor
+        button.addTarget(self, action: #selector(openCamera), for: .touchUpInside)
         return button
     }()
     
@@ -35,6 +37,7 @@ class ViewController: UIViewController {
         button.layer.cornerRadius = 15.0
         button.layer.borderWidth = 2
         button.layer.borderColor = UIColor.systemGray5.cgColor
+        button.addTarget(self, action: #selector(openLibrary), for: .touchUpInside)
         return button
     }()
     
@@ -54,22 +57,68 @@ class ViewController: UIViewController {
         return label
     }()
     
-    private let imageView : UIImageView = {
+    private let recognizeImage : UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleToFill
-        imageView.image = UIImage(named: "talk2")
         return imageView
     }()
 
+    @objc func openCamera(sender: UIButton!){
+        let picker = UIImagePickerController()
+        picker.allowsEditing = true
+        picker.delegate = self
+
+        // The Xcode simulator does not support taking pictures, so let's first check that the camera is indeed supported on the device before trying to present it.
+        
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+           print("Camera is available")
+            picker.sourceType = .camera
+        } else {
+           print("Camera is not available so we will use photo library instead")
+            picker.sourceType = .photoLibrary
+        }
+        self.present(picker, animated: true, completion: nil)
+    }
+    
+    var imageViewController = UIImagePickerController()
+    
+    @objc func openLibrary(sender: UIButton){
+        self.imageViewController.sourceType = .photoLibrary
+        self.present(self.imageViewController, animated: true, completion: nil)
+    }
+    func checkPermissions(){
+        if PHPhotoLibrary.authorizationStatus() != PHAuthorizationStatus.authorized{
+            PHPhotoLibrary.requestAuthorization({ (status: PHAuthorizationStatus) -> Void in ()
+                
+            })
+        }
+        
+        if PHPhotoLibrary.authorizationStatus() == PHAuthorizationStatus.authorized{
+        }else {
+            PHPhotoLibrary.requestAuthorization(requestAuthorizationHandler)
+        }
+    }
+    
+    func requestAuthorizationHandler(status: PHAuthorizationStatus) {
+        if PHPhotoLibrary.authorizationStatus() == PHAuthorizationStatus.authorized{
+            print("Access granted to use photo library.")
+        }else {
+            print("We don't have access to your photos.")
+        }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.checkPermissions()
+        imageViewController.delegate = self
+        
         view.addSubview(label)
-        view.addSubview(imageView)
+        view.addSubview(recognizeImage)
         view.addSubview(stackView)
         stackView.addArrangedSubview(cameraButton)
         stackView.addArrangedSubview(libraryButon)
         
-        recognizeText(image: imageView.image)
+        recognizeText(image: recognizeImage.image)
     }
     
     override func viewDidLayoutSubviews() {
@@ -79,7 +128,7 @@ class ViewController: UIViewController {
                                  width: view.frame.size.width-40,
                                  height: 60)
         
-        imageView.frame = CGRect(x: 20, y: view.safeAreaInsets.top + 60,
+        recognizeImage.frame = CGRect(x: 20, y: view.safeAreaInsets.top + 60,
                                  width: view.frame.size.width-40,
                                  height: view.frame.size.width-40)
         
@@ -122,3 +171,15 @@ class ViewController: UIViewController {
     }
 }
 
+extension ViewController : UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        
+        if picker.sourceType == .photoLibrary{
+            recognizeImage.image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
+        }else{
+            recognizeImage.image = info[UIImagePickerController.InfoKey.editedImage] as? UIImage
+        }
+        dismiss(animated: true, completion: nil)
+    }
+}

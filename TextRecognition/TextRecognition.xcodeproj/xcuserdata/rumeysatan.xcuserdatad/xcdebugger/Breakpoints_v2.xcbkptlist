@@ -14,8 +14,8 @@
             filePath = "TextRecognition/ViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "106"
-            endingLineNumber = "106"
+            startingLineNumber = "155"
+            endingLineNumber = "155"
             landmarkName = "recognizeText(image:)"
             landmarkType = "7">
          </BreakpointContent>
